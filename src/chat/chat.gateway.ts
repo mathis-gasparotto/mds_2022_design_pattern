@@ -7,9 +7,10 @@ import {
 } from '@nestjs/websockets'
 import { Logger } from '@nestjs/common'
 import { Server, Socket } from 'socket.io'
-import { Groom } from '../bots/bots.module'
 import { WhoIs } from '../bots/who-is.service'
 import { User } from '../user/user.entity'
+import { Miam } from '../bots/miam.bot'
+import { Groom } from '../bots/groom.bot'
 
 @WebSocketGateway()
 export class ChatGateway
@@ -18,13 +19,7 @@ export class ChatGateway
   private static LOGGER: Logger = new Logger('Gateway')
   private static CHANNEL = 'message'
 
-  private readonly blackList: string[] = [
-    '10.104.130.27',
-    '10.104.129.241',
-    '10.104.135.77'
-  ]
-
-  constructor(private whoIs: WhoIs) {}
+  constructor(private whoIs: WhoIs, private miam: Miam) {}
 
   @WebSocketServer()
   private server: Server
@@ -33,6 +28,9 @@ export class ChatGateway
     const user: User = await this.whoIs.get(socket)
     if (this.whoIs.checkBlackList(socket, user)) return
     socket.emit(ChatGateway.CHANNEL, Groom.INSTANCE.hello(user))
+    this.miam.hello().then((message) => {
+      socket.emit(ChatGateway.CHANNEL, message)
+    })
     ChatGateway.LOGGER.log(`Client connected: ${user.socketId} - ${user.ip}`)
     this.server.emit(
       ChatGateway.CHANNEL,

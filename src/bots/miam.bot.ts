@@ -13,4 +13,9 @@ export class Miam implements BotInterface {
     const message = await this.service.get()
     return message
   }
+
+  public react(message: string): Promise<string> {
+    if (message.includes("J'ai fin")) return Promise.resolve("C'est bien")
+    return Promise.resolve('')
+  }
 }

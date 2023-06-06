@@ -27,10 +27,8 @@ export class ChatGateway
   async handleConnection(socket: Socket, ...args: any[]) {
     const user: User = await this.whoIs.get(socket)
     if (this.whoIs.checkBlackList(socket, user)) return
-    socket.emit(ChatGateway.CHANNEL, Groom.INSTANCE.hello(user))
-    this.miam.hello().then((message) => {
-      socket.emit(ChatGateway.CHANNEL, message)
-    })
+    socket.emit(ChatGateway.CHANNEL, await Groom.INSTANCE.hello(user))
+    socket.emit(ChatGateway.CHANNEL, await this.miam.hello())
     ChatGateway.LOGGER.log(`Client connected: ${user.socketId} - ${user.ip}`)
     this.server.emit(
       ChatGateway.CHANNEL,

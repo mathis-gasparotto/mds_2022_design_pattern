@@ -6,7 +6,12 @@ export class Groom implements BotInterface {
 
   private constructor() {}
 
-  public hello(user: User): string {
-    return `Bonjour ${user.name} !`
+  public hello(user: User): Promise<string> {
+    return Promise.resolve(`Bonjour ${user.name} !`)
+  }
+
+  public react(message: string): Promise<string> {
+    if (message.includes('Bonjour')) return Promise.resolve('Bonjour !')
+    return Promise.resolve('')
   }
 }

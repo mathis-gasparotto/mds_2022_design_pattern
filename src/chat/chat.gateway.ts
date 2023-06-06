@@ -7,6 +7,7 @@ import {
 } from '@nestjs/websockets'
 import { Logger } from '@nestjs/common'
 import { Server, Socket } from 'socket.io'
+import { Groom } from 'src/bots/bots.module'
 
 @WebSocketGateway()
 export class ChatGateway
@@ -20,6 +21,7 @@ export class ChatGateway
 
   handleConnection(socket: Socket, ...args: any[]) {
     const ip = socket.client.conn.remoteAddress
+    socket.emit(ChatGateway.CHANNEL, Groom.INSTANCE.hello(socket, ip))
     ChatGateway.LOGGER.log(`Client connected: ${socket.id} - ${ip}`)
     this.server.emit(
       ChatGateway.CHANNEL,
